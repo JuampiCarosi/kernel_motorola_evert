@@ -98,6 +98,7 @@ struct gadget_info {
 	struct work_struct work;
 	struct device *dev;
 #endif
+	bool secure;
 };
 
 static inline struct gadget_info *to_gadget_info(struct config_item *item)
@@ -1353,19 +1354,6 @@ static int configfs_composite_bind(struct usb_gadget *gadget,
 		cdev->use_os_string = true;
 		cdev->b_vendor_code = gi->b_vendor_code;
 		memcpy(cdev->qw_sign, gi->qw_sign, OS_STRING_QW_SIGN_LEN);
-	}
-
-	if (gadget_is_otg(gadget) && !otg_desc[0]) {
-		struct usb_descriptor_header *usb_desc;
-
-		usb_desc = usb_otg_descriptor_alloc(gadget);
-		if (!usb_desc) {
-			ret = -ENOMEM;
-			goto err_comp_cleanup;
-		}
-		usb_otg_descriptor_init(gadget, usb_desc);
-		otg_desc[0] = usb_desc;
-		otg_desc[1] = NULL;
 	}
 
 	/* Go through all configs, attach all functions */
