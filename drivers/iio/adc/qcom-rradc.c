@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2017, 2020, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1277,20 +1277,6 @@ static int rradc_probe(struct platform_device *pdev)
 	indio_dev->info = &rradc_info;
 	indio_dev->channels = chip->iio_chans;
 	indio_dev->num_channels = chip->nchannels;
-
-	chip->batt_psy = power_supply_get_by_name("battery");
-	if (!chip->batt_psy)
-		pr_debug("Error obtaining battery power supply\n");
-
-	chip->bms_psy = power_supply_get_by_name("bms");
-	if (!chip->bms_psy)
-		pr_debug("Error obtaining bms power supply\n");
-
-	chip->nb.notifier_call = rradc_psy_notifier_cb;
-	rc = power_supply_reg_notifier(&chip->nb);
-	if (rc < 0)
-		pr_err("Error registering psy notifier rc = %d\n", rc);
-	INIT_WORK(&chip->psy_notify_work, psy_notify_work);
 
 	return devm_iio_device_register(dev, indio_dev);
 }
