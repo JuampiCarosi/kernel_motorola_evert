@@ -1278,6 +1278,20 @@ static int rradc_probe(struct platform_device *pdev)
 	indio_dev->channels = chip->iio_chans;
 	indio_dev->num_channels = chip->nchannels;
 
+	chip->batt_psy = power_supply_get_by_name("battery");
+	if (!chip->batt_psy)
+		pr_debug("Error obtaining battery power supply\n");
+
+	chip->bms_psy = power_supply_get_by_name("bms");
+	if (!chip->bms_psy)
+		pr_debug("Error obtaining bms power supply\n");
+
+	chip->nb.notifier_call = rradc_psy_notifier_cb;
+	rc = power_supply_reg_notifier(&chip->nb);
+	if (rc < 0)
+		pr_err("Error registering psy notifier rc = %d\n", rc);
+	INIT_WORK(&chip->psy_notify_work, psy_notify_work);
+
 	return devm_iio_device_register(dev, indio_dev);
 }
 

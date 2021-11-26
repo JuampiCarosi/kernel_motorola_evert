@@ -304,7 +304,6 @@ struct dwc3_msm {
 
 	enum usb_device_speed override_usb_speed;
 
-	bool core_init_failed;
 	bool			ext_typec_switch;
 	bool                    ss_compliance;
 	struct gpio		mod_switch_gpio;
