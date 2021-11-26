@@ -303,6 +303,8 @@ struct dwc3_msm {
 	struct mutex suspend_resume_mutex;
 
 	enum usb_device_speed override_usb_speed;
+
+	bool core_init_failed;
 	bool			ext_typec_switch;
 	bool                    ss_compliance;
 	struct gpio		mod_switch_gpio;
@@ -4310,6 +4312,12 @@ static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 
 		mdwc->hs_phy->flags |= PHY_HOST_MODE;
 		pm_runtime_get_sync(mdwc->dev);
+		if (mdwc->core_init_failed) {
+			dev_err(mdwc->dev, "%s: Core init failed\n", __func__);
+			pm_runtime_put_sync_suspend(mdwc->dev);
+			return -EAGAIN;
+		}
+
 		if (dwc->maximum_speed == USB_SPEED_SUPER) {
 			mdwc->ss_phy->flags |= PHY_HOST_MODE;
 			usb_phy_notify_connect(mdwc->ss_phy,
