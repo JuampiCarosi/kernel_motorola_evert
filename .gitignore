@@ -51,7 +51,7 @@ Module.symvers
 /vmlinuz
 /System.map
 /Module.markers
-
+/out/
 #
 # Debian directory (make deb-pkg)
 #
@@ -117,5 +117,7 @@ all.config
 # fetched Android config fragments
 android/configs/android-*.cfg
 
-tests
-configs
+#
+#Ignoring Android.bp link file
+#
+Android.bp
